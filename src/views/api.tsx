@@ -7,7 +7,7 @@ import {AddData, DeleteData, GetAllData, GetData, SaveData} from "../core/tools/
 export default function Api() {
     // 默认空状态
     let empty: ICode = {id: '', url: '', method: '', desc: '', header: [], req: [], resp: [],
-        other: {method: '', rpcModule: ''}
+        other: {method: '', rpcModule: '', tag: ''}
     }
     // 一些状态
     // 菜单栏内容
@@ -32,7 +32,7 @@ export default function Api() {
                     <Button onClick={add} icon={<IconPlusCircle />} theme='light'>新增字段</Button>
                     {
                         arrayFields.map(({ field, key, remove }, i) => (
-                            <div key={key} style={{ width: 1000, display: 'flex' }}>
+                            <div key={key} style={{ width: 1200, display: 'flex' }}>
                                 <Input field={`${field}[field]`} label={"字段名称"} style={{ width: 150, marginRight: 10 }} />
                                 <Select field={`${field}[type]`} label={"字段类型"} style={{ width: 100, marginRight: 10 }}>
                                     <Select.Option value='string'>string</Select.Option>
@@ -45,6 +45,7 @@ export default function Api() {
                                 <Input field={`${field}[desc]`} label={"描述"} style={{ width: 150, marginRight: 10 }} />
                                 <Input field={`${field}[fieldName]`} label={"字段别名"} style={{ width: 150, marginRight: 10 }} />
                                 <Switch style={{ marginRight: 10 }} label="必填" field={`${field}[require]`} />
+                                <Switch style={{ marginRight: 10 }} label="字符串" field={`${field}[string]`} />
                                 <Button type='danger' theme='borderless' icon={<IconMinusCircle />} onClick={remove} style={{ margin: 12 }}></Button>
                             </div>
                         ))
@@ -86,6 +87,7 @@ export default function Api() {
                     <Row gutter={16}>
                         <Col span={8}><Input field='other.method' label='方法名'/></Col>
                         <Col span={8}><Input field='other.rpcModule' label='RPC模块名'/></Col>
+                        <Col span={8}><Input field='other.tag' label='标签'/></Col>
                     </Row>
                 </Section>
                 <Section text={'操作'}>
@@ -95,7 +97,7 @@ export default function Api() {
                         <Button type="danger" onClick={()=>{DeleteData(formState.values.id).then(()=>{
                             Toast.success('删除成功')
                             menuInit()
-                        })}}>删除数据</Button>
+                        })}}>删除接口</Button>
                     </Space>
                 </Section>
             </>)}

@@ -1,3 +1,9 @@
+// 首字母大写
+export const firstUpperCase = (name:string) => {
+    const fun = ([first, ...rest]:string[]) => first?.toUpperCase() + rest.join('')
+    return fun(name.split(""))
+}
+
 // 名称替换，下划线转换为大小写
 export const variableUnder2Low = (name: string):string => {
     return name.replace(/\_(\w)/g, function(all, letter){

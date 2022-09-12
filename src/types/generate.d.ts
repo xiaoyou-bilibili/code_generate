@@ -5,11 +5,13 @@ interface IField {
     type: fieldType
     require: boolean
     desc: string
-    fieldName?: string
+    fieldName: string
+    string: boolean
 }
 interface IOther {
     method: string
     rpcModule: string
+    tag: string
 }
 
 interface ICode {

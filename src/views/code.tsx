@@ -20,7 +20,7 @@ export default function Code() {
             data.forEach((item: ICode) => {
                 res.push({
                     label: `[${item.method}] ${item.url} (${item.desc})`,
-                    value: item,
+                    value: JSON.stringify(item),
                     disabled: false,
                     key: item.id,
                 })

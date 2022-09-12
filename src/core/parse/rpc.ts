@@ -1,10 +1,9 @@
 import {objectExtra, variableUnder2Low} from "../tools/field";
-import {match} from "assert";
 // RPC主方法
-const rpcMethod = `// <%= desc %>
-<%= module %>.<%= method %>Resp <%= method %>(1:required <%= module %>.<%= method %>Req req)`
+const rpcMethod = `// <%- desc %>
+<%- module %>.<%- method %>Resp <%- method %>(1:required <%- module %>.<%- method %>Req req)`
 // 接口定义
-const rpcStruct = `struct <%= name %> {<% for (let field of fields) { %>\n   <%= field %><% } %>\n}\n`
+const rpcStruct = `struct <%- name %> {<% for (let field of fields) { %>\n   <%- field %><% } %>\n}\n`
 
 // 生成RPC方法的field字段
 const generateField = (name:string, fields:IField[]):string => {
@@ -24,10 +23,11 @@ const generateField = (name:string, fields:IField[]):string => {
     return res
 }
 
-export function GenerateRpcCode(codes:ICode[]):string {
+export function GenerateRpcCode(codes:string[]):string {
     let methods:string[] = []
     let dataList:string[] = []
-    codes.forEach(code => {
+    codes.forEach(s => {
+        let code:ICode = JSON.parse(s)
         // 生成RPC方法名
         // @ts-ignore
         let method = ejs.render(rpcMethod, {desc: code.desc, module: code.other.rpcModule, method: code.other.method})
