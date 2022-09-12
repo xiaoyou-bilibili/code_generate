@@ -44,3 +44,30 @@ export const objectExtra = (name:string, data: IField[]):Map<string, IField[]> =
     structs.set(name, rootField)
     return structs
 }
+
+// go常用结构体转换
+export const goTypeChange = (type:string):string => {
+    const typeMap:Map<string, string> = new Map([
+        ["string", "string"],
+        ["i32", "int32"],
+        ["i64", "int64"],
+        ["bool", "bool"],
+        ["double", "float64"],
+        ["json", "interface{}"],
+    ])
+
+    return typeMap.get(type) || type
+}
+
+// html的结构体转换
+export const htmlTypeChange = (type:string):string => {
+    const typeMap:Map<string, string> = new Map([
+        ["string", "string"],
+        ["i32", "int"],
+        ["i64", "int"],
+        ["bool", "bool"],
+        ["json", "object"],
+    ])
+
+    return typeMap.get(type) || type
+}

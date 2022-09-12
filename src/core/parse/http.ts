@@ -1,5 +1,5 @@
 // api定义
-import {firstUpperCase, objectExtra, variableUnder2Low} from "../tools/field";
+import {firstUpperCase, objectExtra, variableUnder2Low, htmlTypeChange, goTypeChange} from "../tools/field";
 
 const api = `// <%- desc %>
 r.<%- method %>("<%- url %>", <%- fun %>)`
@@ -17,33 +17,6 @@ func <%- fun %>(c *gin.Context) {
 `
 //  结构体定义
 const struct = `type <%- name %> struct {<% for (let field of fields) { %>\n    <%- field %><% } %>\n}\n`
-
-// go常用结构体转换
-const goTypeChange = (type:string):string => {
-    const typeMap:Map<string, string> = new Map([
-        ["string", "string"],
-        ["i32", "int32"],
-        ["i64", "int64"],
-        ["bool", "bool"],
-        ["double", "float64"],
-        ["json", "interface{}"],
-    ])
-
-    return typeMap.get(type) || type
-}
-
-// html的结构体转换
-const htmlTypeChange = (type:string):string => {
-    const typeMap:Map<string, string> = new Map([
-        ["string", "string"],
-        ["i32", "int"],
-        ["i64", "int"],
-        ["bool", "bool"],
-        ["json", "object"],
-    ])
-
-    return typeMap.get(type) || type
-}
 
 // 生成http路由
 const generateSwag = (code:ICode):string => {
