@@ -1,4 +1,4 @@
-type fieldType = "string" | "i32" | "i64" | "object" | "bool" | "double"
+type fieldType = "string" | "i32" | "i64" | "object" | "bool" | "double" | string
 type methodType = "get" | "post" | "put" | "delete" | ""
 interface IField {
     field: string

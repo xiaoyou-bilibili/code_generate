@@ -6,7 +6,7 @@ import {AddData, DeleteData, GetAllData, GetData, SaveData} from "../core/tools/
 
 export default function Api() {
     // 默认空状态
-    const empty: ICode = {id: '', url: '', method: '', desc: '', header: [], req: [], resp: [],
+    let empty: ICode = {id: '', url: '', method: '', desc: '', header: [], req: [], resp: [],
         other: {method: '', rpcModule: ''}
     }
     // 一些状态
@@ -23,27 +23,6 @@ export default function Api() {
     let [addContent, setAddContent] = useState(JSON.stringify(empty))
 
     const { Section, Input, Select, Switch } = Form;
-    // let api:ICode = {
-    //     id: '',
-    //     url: 'api/v0/people',
-    //     method: 'post',
-    //     desc: '添加人员信息',
-    //     header: [{field: 'x-token', type: 'string', require: true, desc: 'token信息'}],
-    //     req: [
-    //         {field: 'name', type: 'string', require: true, desc: '姓名'},
-    //         {field: 'age', type: 'i32', require: false, desc: '年龄'},
-    //         {field: 'info', type: 'object', require: true, desc: '信息', fieldName: 'Info'},
-    //         {field: 'info.addr', type: 'string', require: true, desc: '地址'},
-    //         {field: 'info.nickname', type: 'string', require: true, desc: '昵称'}
-    //     ],
-    //     resp: [
-    //         {field: 'status', type: 'string', require: true, desc: '状态'},
-    //     ],
-    //     other: {
-    //         method: 'AddPeople',
-    //         rpcModule: 'people'
-    //     }
-    // }
 
     // 渲染field字段
     const renderField = (field:string) => {
