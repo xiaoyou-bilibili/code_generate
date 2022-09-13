@@ -1,15 +1,13 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {Form, Col, Row, ArrayField, Button, Select as Select2, Space, Toast, Modal, TextArea} from '@douyinfe/semi-ui';
 import { IconPlusCircle, IconMinusCircle } from '@douyinfe/semi-icons';
-import {AddData, DeleteData, GetAllData, GetData, SaveData} from "../core/tools/db";
+import {AddData, DeleteData, GetAllData, GetData, SaveData, storeNameDatabase} from "../core/tools/db";
 import {exportJson} from "../core/tools/util";
 
 
 export default function Database() {
     // 默认空状态
-    let empty: ICode = {id: '', url: '', method: '', desc: '', header: [], req: [], resp: [],
-        other: {method: '', rpcModule: '', tag: ''}
-    }
+    let empty: IDatabase = {fields: [], table: "", desc: "", id: ""}
     // 一些状态
     // 菜单栏内容
     let [menus, setMenus] = useState([])
@@ -26,8 +24,6 @@ export default function Database() {
     let [batchImportVisible, setBatchImportVisible] = useState(false)
     // 批量导入内容
     let [batchImportContent, setBatchImportContent] = useState('')
-
-
     const { Section, Input, Select, Switch } = Form;
 
     // 渲染field字段
@@ -41,17 +37,22 @@ export default function Database() {
                             <div key={key} style={{ width: 1200, display: 'flex' }}>
                                 <Input field={`${field}[field]`} label={"字段名称"} style={{ width: 150, marginRight: 10 }} />
                                 <Select field={`${field}[type]`} label={"字段类型"} style={{ width: 100, marginRight: 10 }}>
-                                    <Select.Option value='string'>string</Select.Option>
-                                    <Select.Option value='i32'>i32</Select.Option>
+                                    <Select.Option value='tinyint'>tinyint</Select.Option>
+                                    <Select.Option value='int'>int</Select.Option>
                                     <Select.Option value='i64'>i64</Select.Option>
-                                    <Select.Option value='object'>object</Select.Option>
-                                    <Select.Option value='bool'>bool</Select.Option>
+                                    <Select.Option value='bigint'>bigint</Select.Option>
+                                    <Select.Option value='float'>float</Select.Option>
                                     <Select.Option value='double'>double</Select.Option>
+                                    <Select.Option value='datetime'>datetime</Select.Option>
+                                    <Select.Option value='varchar(255)'>varchar(255)</Select.Option>
+                                    <Select.Option value='text'>text</Select.Option>
+                                    <Select.Option value='json'>json</Select.Option>
                                 </Select>
                                 <Input field={`${field}[desc]`} label={"描述"} style={{ width: 150, marginRight: 10 }} />
-                                <Input field={`${field}[fieldName]`} label={"字段别名"} style={{ width: 150, marginRight: 10 }} />
-                                <Switch style={{ marginRight: 10 }} label="必填" field={`${field}[require]`} />
-                                <Switch style={{ marginRight: 10 }} label="字符串" field={`${field}[string]`} />
+                                <Switch style={{ marginRight: 10 }} label="不为空" field={`${field}[notNull]`} />
+                                <Switch style={{ marginRight: 10 }} label="主键" field={`${field}[primary]`} />
+                                <Switch style={{ marginRight: 10 }} label="索引" field={`${field}[index]`} />
+                                <Switch style={{ marginRight: 10 }} label="自增" field={`${field}[autoIncrease]`} />
                                 <Button type='danger' theme='borderless' icon={<IconMinusCircle />} onClick={remove} style={{ margin: 12 }}></Button>
                             </div>
                         ))
@@ -68,33 +69,12 @@ export default function Database() {
                 <>
                     <Section text={'基本信息'}>
                         <Row gutter={16}>
-                            <Col span={3}>
-                                <Select field="method" label={"请求方式"} style={{width: 300}}>
-                                    <Select.Option value="get">get</Select.Option>
-                                    <Select.Option value="post">post</Select.Option>
-                                    <Select.Option value="put">put</Select.Option>
-                                    <Select.Option value="delete">delete</Select.Option>
-                                </Select>
-                            </Col>
-                            <Col span={8}><Input field='url' label='接口地址'/></Col>
-                            <Col span={8}><Input field='desc' label='接口描述'/></Col>
+                            <Col span={8}><Input field='table' label='数据库表名'/></Col>
+                            <Col span={8}><Input field='desc' label='描述'/></Col>
                         </Row>
                     </Section>
-                    <Section text={'header信息'}>
-                        {renderField('header')}
-                    </Section>
-                    <Section text={'body信息'}>
-                        {renderField('req')}
-                    </Section>
-                    <Section text={'返回信息'}>
-                        {renderField('resp')}
-                    </Section>
-                    <Section text={'其他配置'}>
-                        <Row gutter={16}>
-                            <Col span={8}><Input field='other.method' label='方法名'/></Col>
-                            <Col span={8}><Input field='other.rpcModule' label='RPC模块名'/></Col>
-                            <Col span={8}><Input field='other.tag' label='标签'/></Col>
-                        </Row>
+                    <Section text={'表结构'}>
+                        {renderField('fields')}
                     </Section>
                     <Section text={'操作'}>
                         <Space>
@@ -112,21 +92,17 @@ export default function Database() {
 
 
     // 渲染菜单
-    const renderSelect = (data:ICode[]) => {
+    const renderSelect = (data:IDatabase[]) => {
         if (data == null) {return}
         let plugins: JSX.Element[] = []
-        data.forEach((item:ICode)=>plugins.push(<Select2.Option key={item.id} value={item.id}>{`[${item.method}] ${item.url} (${item.desc})`}</Select2.Option>))
+        data.forEach((item:IDatabase)=>plugins.push(<Select2.Option key={item.id} value={item.id}>{item.table}</Select2.Option>))
         return plugins
     }
     // 菜单选中事件
     const menuSelect = (id:any) => {
-        GetData(id).then((data:any) => {
+        GetData(id, storeNameDatabase).then((data:any) => {
             formApi.setValues(data)
-            // array类型需要单独再设置一遍，否则无法生效
-            formApi.setValue('header', data.header)
-            formApi.setValue('req', data.req)
-            formApi.setValue('resp', data.resp)
-            // id也需要单独设置否则保存会没有ID
+            // id需要单独设置否则保存会没有ID
             formApi.setValue('id', data.id)
             console.log(data)
         })
@@ -134,7 +110,7 @@ export default function Database() {
     // 保存到数据库
     const saveState = (values:any) => {
         let data = values.values
-        SaveData(data.id, data).then(() => Toast.success('保存成功！'))
+        SaveData(data.id, data, storeNameDatabase).then(() => Toast.success('保存成功！'))
         console.log(data)
     }
     // 导出结果
@@ -143,7 +119,7 @@ export default function Database() {
     }
     // 菜单初始化
     const menuInit = () => {
-        GetAllData().then((data:any)=> setMenus(data))
+        GetAllData(storeNameDatabase).then((data:any)=> setMenus(data))
     }
     // 界面初始化
     const viewInit = useCallback(() => {
@@ -151,13 +127,13 @@ export default function Database() {
     }, [])
     useEffect(viewInit, [viewInit])
     // 批量导出
-    const batchExport = () => GetAllData().then((data:any)=> exportJson(data, "all"))
+    const batchExport = () => GetAllData(storeNameDatabase).then((data:any)=> exportJson(data, "all"))
 
     return (
         <div>
             <Space style={{marginBottom: 20}}>
-                <Button theme='solid' type='primary' style={{ marginRight: 8 }} onClick={()=>{setContentVisible(true)}}>新增接口</Button>
-                <Select2 filter style={{ width: 300 }} onSelect={menuSelect} placeholder='请选择接口'>
+                <Button theme='solid' type='primary' style={{ marginRight: 8 }} onClick={()=>{setContentVisible(true)}}>新增表</Button>
+                <Select2 filter style={{ width: 300 }} onSelect={menuSelect} placeholder='请选择表'>
                     {renderSelect(menus)}
                 </Select2>
                 <Button theme='solid' type='secondary' style={{ marginRight: 8 }} onClick={batchExport}>批量导出</Button>
@@ -168,7 +144,7 @@ export default function Database() {
                 title="添加内容"
                 visible={contentVisible}
                 onOk={()=>{
-                    AddData(JSON.parse(addContent)).then(() => {
+                    AddData(JSON.parse(addContent), storeNameDatabase).then(() => {
                         Toast.success('添加成功')
                         menuInit()
                         setContentVisible(false)
@@ -185,7 +161,7 @@ export default function Database() {
                 onOk={()=>{
                     let content = JSON.parse(batchImportContent)
                     content.forEach((data:any) => {
-                        AddData(data).then()
+                        AddData(data, storeNameDatabase).then()
                     })
                     Toast.success('添加成功')
                     menuInit()
