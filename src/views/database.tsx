@@ -5,10 +5,10 @@ import {AddData, DeleteData, GetAllData, GetData, SaveData} from "../core/tools/
 import {exportJson} from "../core/tools/util";
 
 
-export default function Api() {
+export default function Database() {
     // 默认空状态
     let empty: ICode = {id: '', url: '', method: '', desc: '', header: [], req: [], resp: [],
-        other: {method: '', rpcModule: '', dataModule: '', tag: ''}
+        other: {method: '', rpcModule: '', tag: ''}
     }
     // 一些状态
     // 菜单栏内容
@@ -66,48 +66,47 @@ export default function Api() {
         return  (<Form initValues={empty} getFormApi={(api) => setFormApi(api)} labelPosition={"left"}>
             {({ formState, values, formApi }) => (
                 <>
-                <Section text={'基本信息'}>
-                    <Row gutter={16}>
-                        <Col span={3}>
-                            <Select field="method" label={"请求方式"} style={{width: 300}}>
-                                <Select.Option value="get">get</Select.Option>
-                                <Select.Option value="post">post</Select.Option>
-                                <Select.Option value="put">put</Select.Option>
-                                <Select.Option value="delete">delete</Select.Option>
-                            </Select>
-                        </Col>
-                        <Col span={8}><Input field='url' label='接口地址'/></Col>
-                        <Col span={8}><Input field='desc' label='接口描述'/></Col>
-                    </Row>
-                </Section>
-                <Section text={'header信息'}>
-                    {renderField('header')}
-                </Section>
-                <Section text={'body信息'}>
-                    {renderField('req')}
-                </Section>
-                <Section text={'返回信息'}>
-                    {renderField('resp')}
-                </Section>
-                <Section text={'其他配置'}>
-                    <Row gutter={16}>
-                        <Col span={4}><Input field='other.method' label='方法名'/></Col>
-                        <Col span={4}><Input field='other.rpcModule' label='RPC模块名'/></Col>
-                        <Col span={4}><Input field='other.dataModule' label='数据模块名'/></Col>
-                        <Col span={4}><Input field='other.tag' label='标签'/></Col>
-                    </Row>
-                </Section>
-                <Section text={'操作'}>
-                    <Space>
-                        <Button type="primary" onClick={()=>{saveState(formState)}}>保存到数据库</Button>
-                        <Button type="secondary" onClick={()=>{exportState(formState)}}>导出结果</Button>
-                        <Button type="danger" onClick={()=>{DeleteData(formState.values.id).then(()=>{
-                            Toast.success('删除成功')
-                            menuInit()
-                        })}}>删除接口</Button>
-                    </Space>
-                </Section>
-            </>)}
+                    <Section text={'基本信息'}>
+                        <Row gutter={16}>
+                            <Col span={3}>
+                                <Select field="method" label={"请求方式"} style={{width: 300}}>
+                                    <Select.Option value="get">get</Select.Option>
+                                    <Select.Option value="post">post</Select.Option>
+                                    <Select.Option value="put">put</Select.Option>
+                                    <Select.Option value="delete">delete</Select.Option>
+                                </Select>
+                            </Col>
+                            <Col span={8}><Input field='url' label='接口地址'/></Col>
+                            <Col span={8}><Input field='desc' label='接口描述'/></Col>
+                        </Row>
+                    </Section>
+                    <Section text={'header信息'}>
+                        {renderField('header')}
+                    </Section>
+                    <Section text={'body信息'}>
+                        {renderField('req')}
+                    </Section>
+                    <Section text={'返回信息'}>
+                        {renderField('resp')}
+                    </Section>
+                    <Section text={'其他配置'}>
+                        <Row gutter={16}>
+                            <Col span={8}><Input field='other.method' label='方法名'/></Col>
+                            <Col span={8}><Input field='other.rpcModule' label='RPC模块名'/></Col>
+                            <Col span={8}><Input field='other.tag' label='标签'/></Col>
+                        </Row>
+                    </Section>
+                    <Section text={'操作'}>
+                        <Space>
+                            <Button type="primary" onClick={()=>{saveState(formState)}}>保存到数据库</Button>
+                            <Button type="secondary" onClick={()=>{exportState(formState)}}>导出结果</Button>
+                            <Button type="danger" onClick={()=>{DeleteData(formState.values.id).then(()=>{
+                                Toast.success('删除成功')
+                                menuInit()
+                            })}}>删除接口</Button>
+                        </Space>
+                    </Section>
+                </>)}
         </Form>)
     }
 

@@ -9,7 +9,7 @@ const swag = `
 // @Summary      <%- desc %>
 // @Description
 // @Tags         <%- tag %><% for (let field of fields) { %>\n// @Param        <%- field %><% } %>
-// @Success      200  {object}  BaseResponse{data=<%- fun%>Resp}
+// @Success      200  {object}  BaseResponse{data=<%-module%><%- fun%>Resp}
 // @Router       <%- url %> [<%- method %>]
 func <%- fun %>(c *gin.Context) {
 
@@ -32,7 +32,7 @@ const generateSwag = (code:ICode):string => {
         })
     } else {
         // 否则可以看成是body
-        fields.push(`default body ${htmlTypeChange(code.other.method)}Req true "请求参数"`)
+        fields.push(`default body ${code.other.dataModule?`${code.other.dataModule}.`:""}${htmlTypeChange(code.other.method)}Req true "请求参数"`)
     }
     // @ts-ignore
     return ejs.render(swag, {
@@ -41,6 +41,7 @@ const generateSwag = (code:ICode):string => {
         tag: code.other.tag,
         url: code.url,
         method: code.method,
+        module: code.other.dataModule?`${code.other.dataModule}.`:"",
         fields
     });
 }
@@ -57,7 +58,7 @@ const generateStruct = (name:string,fields:IField[]):string => {
         for (let i = 0; i < value.length; i++) {
             let f = value[i]
             // Name string `json:"name"`
-            fields.push(`${firstUpperCase(variableUnder2Low(f.field))} ${goTypeChange(f.type)} \`json:"${f.string?'string,':''}${f.field}"\` // ${f.desc}`)
+            fields.push(`${firstUpperCase(variableUnder2Low(f.field))} ${f.require?"":"*"}${goTypeChange(f.type)} \`json:"${f.string?'string,':''}${f.field}"${f.require?' validate:"require"':''}\` // ${f.desc}`)
         }
         // @ts-ignore
         res+=ejs.render(struct, {name, fields})
