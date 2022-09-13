@@ -35,7 +35,7 @@ export default function Database() {
                     {
                         arrayFields.map(({ field, key, remove }, i) => (
                             <div key={key} style={{ width: 1200, display: 'flex' }}>
-                                <Input field={`${field}[field]`} label={"字段名称"} style={{ width: 150, marginRight: 10 }} />
+                                <Input field={`${field}[name]`} label={"字段名称"} style={{ width: 150, marginRight: 10 }} />
                                 <Select field={`${field}[type]`} label={"字段类型"} style={{ width: 100, marginRight: 10 }}>
                                     <Select.Option value='tinyint'>tinyint</Select.Option>
                                     <Select.Option value='int'>int</Select.Option>
@@ -104,6 +104,7 @@ export default function Database() {
             formApi.setValues(data)
             // id需要单独设置否则保存会没有ID
             formApi.setValue('id', data.id)
+            formApi.setValue('fields', data.fields)
             console.log(data)
         })
     }

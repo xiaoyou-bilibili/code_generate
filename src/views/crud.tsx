@@ -1,9 +1,10 @@
 import * as monaco from "monaco-editor";
 import {useCallback, useEffect, useState} from "react";
 import {Space, Transfer, Button} from '@douyinfe/semi-ui';
-import {GetAllData} from "../core/tools/db";
+import {GetAllData, storeNameDatabase} from "../core/tools/db";
 import {GenerateRpcCode} from "../core/parse/rpc";
 import {GenerateHttpCode} from "../core/parse/http";
+import {GenerateMysqlCreate} from "../core/parse/mysql";
 
 let editor: monaco.editor.IStandaloneCodeEditor;
 
@@ -15,11 +16,11 @@ export default function Crud() {
 
     // 初始化所有的接口
     const initApi = () => {
-        GetAllData().then((data: any)=>{
+        GetAllData(storeNameDatabase).then((data: any)=>{
             let res:any = []
-            data.forEach((item: ICode) => {
+            data.forEach((item: IDatabase) => {
                 res.push({
-                    label: `[${item.method}] ${item.url} (${item.desc})`,
+                    label: `${item.table} (${item.desc})`,
                     value: JSON.stringify(item),
                     disabled: false,
                     key: item.id,
@@ -59,8 +60,11 @@ export default function Crud() {
                 dataSource={dataSource}
             ></Transfer>
             <div>
-                <Button onClick={() => {editor.setValue(GenerateHttpCode(selectItem))}} theme='light' type='primary' style={{ marginRight: 8 }}>Gin 路由与接口代码生成</Button>
-                <Button onClick={() => {editor.setValue(GenerateRpcCode(selectItem))}} theme='light' type='primary' style={{ marginRight: 8 }}>RPC 代码生成</Button>
+                <Button onClick={() => {editor.setValue(GenerateMysqlCreate(selectItem))}} theme='light' type='primary' style={{ marginRight: 8 }}>建表语句生成</Button>
+                <Button onClick={() => {editor.setValue(GenerateRpcCode(selectItem))}} theme='light' type='primary' style={{ marginRight: 8 }}>插入语句生成</Button>
+                <Button onClick={() => {editor.setValue(GenerateRpcCode(selectItem))}} theme='light' type='primary' style={{ marginRight: 8 }}>删除语句生成</Button>
+                <Button onClick={() => {editor.setValue(GenerateRpcCode(selectItem))}} theme='light' type='primary' style={{ marginRight: 8 }}>修改语句生成</Button>
+                <Button onClick={() => {editor.setValue(GenerateRpcCode(selectItem))}} theme='light' type='primary' style={{ marginRight: 8 }}>查找语句生成</Button>
             </div>
         </Space>
         <div id={"viewEditBox"}  style={{height: "700px"}} />
